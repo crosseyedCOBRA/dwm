@@ -1194,7 +1194,7 @@ ipc_handle_socket_epoll_event(struct epoll_event *ev)
   if (!(ev->events & EPOLLIN)) return -1;
 
   // EPOLLIN means incoming client connection request
-  fputs("Received EPOLLIN event on socket\n", stderr);
+  DEBUG("Received EPOLLIN event on socket\n");
   int new_fd = ipc_accept_client();
 
   return new_fd;

@@ -44,8 +44,10 @@ static const char localshare[]           = ".local/share";
 #endif // AUTOSTART_PATCH
 #if BAR_ANYBAR_PATCH
 static const int usealtbar               = 1;        /* 1 means use non-dwm status bar */
+/* The bar is quickshell (started by autostart.sh). Its windows have no class,
+ * so mine.c also takes any window typed _NET_WM_WINDOW_TYPE_DOCK as a bar. */
 static const char *altbarclass           = "Polybar"; /* Alternate bar class name */
-static const char *altbarcmd             = "$HOME/bar.sh"; /* Alternate bar launch command */
+static const char *altbarcmd             = ""; /* Alternate bar launch command */
 #endif // BAR_ANYBAR_PATCH
 #if BAR_HOLDBAR_PATCH
 static const int showbar                 = 0;   /* 0 means no bar */
@@ -539,7 +541,6 @@ static const Rule rules[] = {
 	RULE(.class = "Alacritty", .isterminal = 1)
 	RULE(.title = "Event Tester", .noswallow = 1)
 	RULE(.class = "pavucontrol", .isfloating = 1)
-	RULE(.instance = "spterm", .tags = SPTAG(0), .isfloating = 1)
 };
 
 #if MONITOR_RULES_PATCH
@@ -579,86 +580,10 @@ static const Inset default_inset = {
  *    widthfunc, drawfunc, clickfunc - providing bar module width, draw and click functions
  *    name - does nothing, intended for visual clue and for logging / debugging
  */
+/* dwm draws no bar of its own: the quickshell bar is managed as an external
+ * bar (BAR_ANYBAR_PATCH), so there are no bar modules here. */
 static const BarRule barrules[] = {
-	/* monitor   bar    alignment         widthfunc                 drawfunc                clickfunc                hoverfunc                name */
-	#if BAR_STATUSBUTTON_PATCH
-	{ -1,        0,     BAR_ALIGN_LEFT,   width_stbutton,           draw_stbutton,          click_stbutton,          NULL,                    "statusbutton" },
-	#endif // BAR_STATUSBUTTON_PATCH
-	#if BAR_LAUNCHER_PATCH
-	{ -1,        0,     BAR_ALIGN_LEFT,   width_launcher,           draw_launcher,          click_launcher,          NULL,                    "launcher" },
-	#endif // BAR_LAUNCHER_PATCH
-	#if BAR_POWERLINE_TAGS_PATCH
-	{  0,        0,     BAR_ALIGN_LEFT,   width_pwrl_tags,          draw_pwrl_tags,         click_pwrl_tags,         hover_pwrl_tags,         "powerline_tags" },
-	#endif // BAR_POWERLINE_TAGS_PATCH
-	#if BAR_TAGS_PATCH
-	{ -1,        0,     BAR_ALIGN_LEFT,   width_tags,               draw_tags,              click_tags,              hover_tags,              "tags" },
-	#endif // BAR_TAGS_PATCH
-	#if BAR_TAGLABELS_PATCH
-	{ -1,        0,     BAR_ALIGN_LEFT,   width_taglabels,          draw_taglabels,         click_taglabels,         hover_taglabels,         "taglabels" },
-	#endif // BAR_TAGLABELS_PATCH
-	#if BAR_TAGGRID_PATCH
-	{ -1,        0,     BAR_ALIGN_LEFT,   width_taggrid,            draw_taggrid,           click_taggrid,           NULL,                    "taggrid" },
-	#endif // BAR_TAGGRID_PATCH
-	#if BAR_SYSTRAY_PATCH
-	{  0,        0,     BAR_ALIGN_RIGHT,  width_systray,            draw_systray,           click_systray,           NULL,                    "systray" },
-	#endif // BAR_SYSTRAY_PATCH
-	#if BAR_LTSYMBOL_PATCH
-	{ -1,        0,     BAR_ALIGN_LEFT,   width_ltsymbol,           draw_ltsymbol,          click_ltsymbol,          NULL,                    "layout" },
-	#endif // BAR_LTSYMBOL_PATCH
-	#if BAR_STATUSCOLORS_PATCH && BAR_STATUSCMD_PATCH
-	{ statusmon, 0,     BAR_ALIGN_RIGHT,  width_statuscolors,       draw_statuscolors,      click_statuscmd,         NULL,                    "statuscolors" },
-	#elif BAR_STATUSCOLORS_PATCH
-	{ statusmon, 0,     BAR_ALIGN_RIGHT,  width_statuscolors,       draw_statuscolors,      click_statuscolors,      NULL,                    "statuscolors" },
-	#elif BAR_STATUS2D_PATCH && BAR_STATUSCMD_PATCH
-	{ statusmon, 0,     BAR_ALIGN_RIGHT,  width_status2d,           draw_status2d,          click_statuscmd,         NULL,                    "status2d" },
-	#elif BAR_STATUS2D_PATCH
-	{ statusmon, 0,     BAR_ALIGN_RIGHT,  width_status2d,           draw_status2d,          click_status2d,          NULL,                    "status2d" },
-	#elif BAR_POWERLINE_STATUS_PATCH
-	{ statusmon, 0,     BAR_ALIGN_RIGHT,  width_pwrl_status,        draw_pwrl_status,       click_pwrl_status,       NULL,                    "powerline_status" },
-	#elif BAR_STATUS_PATCH && BAR_STATUSCMD_PATCH
-	{ statusmon, 0,     BAR_ALIGN_RIGHT,  width_status,             draw_status,            click_statuscmd,         NULL,                    "status" },
-	#elif BAR_STATUS_PATCH
-	{ statusmon, 0,     BAR_ALIGN_RIGHT,  width_status,             draw_status,            click_status,            NULL,                    "status" },
-	#endif // BAR_STATUS2D_PATCH | BAR_STATUSCMD_PATCH
-	#if XKB_PATCH
-	{  0,        0,     BAR_ALIGN_RIGHT,  width_xkb,                draw_xkb,               click_xkb,               NULL,                    "xkb" },
-	#endif // XKB_PATCH
-	#if BAR_FLEXWINTITLE_PATCH
-	{ -1,        0,     BAR_ALIGN_NONE,   width_flexwintitle,       draw_flexwintitle,      click_flexwintitle,      NULL,                    "flexwintitle" },
-	#elif BAR_TABGROUPS_PATCH
-	{ -1,        0,     BAR_ALIGN_NONE,   width_bartabgroups,       draw_bartabgroups,      click_bartabgroups,      NULL,                    "bartabgroups" },
-	#elif BAR_AWESOMEBAR_PATCH
-	{ -1,        0,     BAR_ALIGN_NONE,   width_awesomebar,         draw_awesomebar,        click_awesomebar,        NULL,                    "awesomebar" },
-	#elif BAR_FANCYBAR_PATCH
-	{ -1,        0,     BAR_ALIGN_NONE,   width_fancybar,           draw_fancybar,          click_fancybar,          NULL,                    "fancybar" },
-	#elif BAR_WINTITLE_PATCH
-	{ -1,        0,     BAR_ALIGN_NONE,   width_wintitle,           draw_wintitle,          click_wintitle,          NULL,                    "wintitle" },
-	#endif // BAR_TABGROUPS_PATCH | BAR_AWESOMEBAR_PATCH | BAR_FANCYBAR_PATCH | BAR_WINTITLE_PATCH
-	#if BAR_EXTRASTATUS_PATCH
-	#if BAR_STATUSCOLORS_PATCH && BAR_STATUSCMD_PATCH
-	{ statusmon, 1,     BAR_ALIGN_CENTER, width_statuscolors_es,    draw_statuscolors_es,   click_statuscmd_es,      NULL,                    "statuscolors_es" },
-	#elif BAR_STATUSCOLORS_PATCH
-	{ statusmon, 1,     BAR_ALIGN_CENTER, width_statuscolors_es,    draw_statuscolors_es,   click_statuscolors,      NULL,                    "statuscolors_es" },
-	#elif BAR_STATUS2D_PATCH && BAR_STATUSCMD_PATCH
-	{ statusmon, 1,     BAR_ALIGN_CENTER, width_status2d_es,        draw_status2d_es,       click_statuscmd_es,      NULL,                    "status2d_es" },
-	#elif BAR_STATUS2D_PATCH
-	{ statusmon, 1,     BAR_ALIGN_CENTER, width_status2d_es,        draw_status2d_es,       click_status2d,          NULL,                    "status2d_es" },
-	#elif BAR_POWERLINE_STATUS_PATCH
-	{ statusmon, 1,     BAR_ALIGN_RIGHT,  width_pwrl_status_es,     draw_pwrl_status_es,    click_pwrl_status,       NULL,                    "powerline_status" },
-	#elif BAR_STATUSCMD_PATCH && BAR_STATUS_PATCH
-	{ statusmon, 1,     BAR_ALIGN_CENTER, width_status_es,          draw_status_es,         click_statuscmd_es,      NULL,                    "status_es" },
-	#elif BAR_STATUS_PATCH
-	{ statusmon, 1,     BAR_ALIGN_CENTER, width_status_es,          draw_status_es,         click_status,            NULL,                    "status_es" },
-	#endif // BAR_STATUS2D_PATCH | BAR_STATUSCMD_PATCH
-	#endif // BAR_EXTRASTATUS_PATCH
-	#if BAR_FLEXWINTITLE_PATCH
-	#if BAR_WINTITLE_HIDDEN_PATCH
-	{ -1,        1,  BAR_ALIGN_RIGHT_RIGHT, width_wintitle_hidden,  draw_wintitle_hidden,   click_wintitle_hidden,   NULL,                    "wintitle_hidden" },
-	#endif
-	#if BAR_WINTITLE_FLOATING_PATCH
-	{ -1,        1,     BAR_ALIGN_LEFT,   width_wintitle_floating,  draw_wintitle_floating, click_wintitle_floating, NULL,                    "wintitle_floating" },
-	#endif // BAR_WINTITLE_FLOATING_PATCH
-	#endif // BAR_FLEXWINTITLE_PATCH
+	{ -2 },
 };
 
 /* layout(s) */
@@ -703,34 +628,34 @@ static const int scrollargs[][2] = {
 #if FLEXTILE_DELUXE_LAYOUT
 static const Layout layouts[] = {
 	/* symbol     arrange function, { nmaster, nstack, layout, master axis, stack axis, secondary stack axis, symbol func } */
-	{ "[]=",      flextile,         { -1, -1, SPLIT_VERTICAL, TOP_TO_BOTTOM, TOP_TO_BOTTOM, 0, NULL } }, // default tile layout
- 	{ "><>",      NULL,             {0} },    /* no layout function means floating behavior */
-	{ "[M]",      flextile,         { -1, -1, NO_SPLIT, MONOCLE, MONOCLE, 0, NULL } }, // monocle
+	{ "tile",      flextile,         { -1, -1, SPLIT_VERTICAL, TOP_TO_BOTTOM, TOP_TO_BOTTOM, 0, NULL } }, // default tile layout
+ 	{ "floating",      NULL,             {0} },    /* no layout function means floating behavior */
+	{ "max",      flextile,         { -1, -1, NO_SPLIT, MONOCLE, MONOCLE, 0, NULL } }, // monocle
 	{ "|||",      flextile,         { -1, -1, SPLIT_VERTICAL, LEFT_TO_RIGHT, TOP_TO_BOTTOM, 0, NULL } }, // columns (col) layout
 	{ ">M>",      flextile,         { -1, -1, FLOATING_MASTER, LEFT_TO_RIGHT, LEFT_TO_RIGHT, 0, NULL } }, // floating master
 	{ "[D]",      flextile,         { -1, -1, SPLIT_VERTICAL, TOP_TO_BOTTOM, MONOCLE, 0, NULL } }, // deck
-	{ "TTT",      flextile,         { -1, -1, SPLIT_HORIZONTAL, LEFT_TO_RIGHT, LEFT_TO_RIGHT, 0, NULL } }, // bstack
+	{ "tilebottom",      flextile,         { -1, -1, SPLIT_HORIZONTAL, LEFT_TO_RIGHT, LEFT_TO_RIGHT, 0, NULL } }, // bstack
 	{ "===",      flextile,         { -1, -1, SPLIT_HORIZONTAL, LEFT_TO_RIGHT, TOP_TO_BOTTOM, 0, NULL } }, // bstackhoriz
-	{ "|M|",      flextile,         { -1, -1, SPLIT_CENTERED_VERTICAL, LEFT_TO_RIGHT, TOP_TO_BOTTOM, TOP_TO_BOTTOM, NULL } }, // centeredmaster
+	{ "centered",      flextile,         { -1, -1, SPLIT_CENTERED_VERTICAL, LEFT_TO_RIGHT, TOP_TO_BOTTOM, TOP_TO_BOTTOM, NULL } }, // centeredmaster
 	{ "-M-",      flextile,         { -1, -1, SPLIT_CENTERED_HORIZONTAL, TOP_TO_BOTTOM, LEFT_TO_RIGHT, LEFT_TO_RIGHT, NULL } }, // centeredmaster horiz
 	{ ":::",      flextile,         { -1, -1, NO_SPLIT, GAPPLESSGRID, GAPPLESSGRID, 0, NULL } }, // gappless grid
-	{ "[\\]",     flextile,         { -1, -1, NO_SPLIT, DWINDLE, DWINDLE, 0, NULL } }, // fibonacci dwindle
-	{ "(@)",      flextile,         { -1, -1, NO_SPLIT, SPIRAL, SPIRAL, 0, NULL } }, // fibonacci spiral
+	{ "dwindle",     flextile,         { -1, -1, NO_SPLIT, DWINDLE, DWINDLE, 0, NULL } }, // fibonacci dwindle
+	{ "spiral",      flextile,         { -1, -1, NO_SPLIT, SPIRAL, SPIRAL, 0, NULL } }, // fibonacci spiral
 	{ "[T]",      flextile,         { -1, -1, SPLIT_VERTICAL, LEFT_TO_RIGHT, TATAMI, 0, NULL } }, // tatami mats
 	#if TILE_LAYOUT
-	{ "[]=",      tile,             {0} },
+	{ "tile",      tile,             {0} },
 	#endif
 	#if MONOCLE_LAYOUT
-	{ "[M]",      monocle,          {0} },
+	{ "max",      monocle,          {0} },
 	#endif
 	#if BSTACK_LAYOUT
-	{ "TTT",      bstack,           {0} },
+	{ "tilebottom",      bstack,           {0} },
 	#endif
 	#if BSTACKHORIZ_LAYOUT
 	{ "===",      bstackhoriz,      {0} },
 	#endif
 	#if CENTEREDMASTER_LAYOUT
-	{ "|M|",      centeredmaster,   {0} },
+	{ "centered",      centeredmaster,   {0} },
 	#endif
 	#if CENTEREDFLOATINGMASTER_LAYOUT
 	{ ">M>",      centeredfloatingmaster, {0} },
@@ -742,10 +667,10 @@ static const Layout layouts[] = {
 	{ "[D]",      deck,             {0} },
 	#endif
 	#if FIBONACCI_SPIRAL_LAYOUT
-	{ "(@)",      spiral,           {0} },
+	{ "spiral",      spiral,           {0} },
 	#endif
 	#if FIBONACCI_DWINDLE_LAYOUT
-	{ "[\\]",     dwindle,          {0} },
+	{ "dwindle",     dwindle,          {0} },
 	#endif
 	#if GRIDMODE_LAYOUT
 	{ "HHH",      grid,             {0} },
@@ -764,20 +689,20 @@ static const Layout layouts[] = {
 static const Layout layouts[] = {
 	/* symbol     arrange function */
 	#if TILE_LAYOUT
-	{ "[]=",      tile },    /* first entry is default */
+	{ "tile",      tile },    /* first entry is default */
 	#endif
-	{ "><>",      NULL },    /* no layout function means floating behavior */
+	{ "floating",      NULL },    /* no layout function means floating behavior */
 	#if MONOCLE_LAYOUT
-	{ "[M]",      monocle },
+	{ "max",      monocle },
 	#endif
 	#if BSTACK_LAYOUT
-	{ "TTT",      bstack },
+	{ "tilebottom",      bstack },
 	#endif
 	#if BSTACKHORIZ_LAYOUT
 	{ "===",      bstackhoriz },
 	#endif
 	#if CENTEREDMASTER_LAYOUT
-	{ "|M|",      centeredmaster },
+	{ "centered",      centeredmaster },
 	#endif
 	#if CENTEREDFLOATINGMASTER_LAYOUT
 	{ ">M>",      centeredfloatingmaster },
@@ -789,10 +714,10 @@ static const Layout layouts[] = {
 	{ "[D]",      deck },
 	#endif
 	#if FIBONACCI_SPIRAL_LAYOUT
-	{ "(@)",      spiral },
+	{ "spiral",      spiral },
 	#endif
 	#if FIBONACCI_DWINDLE_LAYOUT
-	{ "[\\]",     dwindle },
+	{ "dwindle",     dwindle },
 	#endif
 	#if GRIDMODE_LAYOUT
 	{ "HHH",      grid },
@@ -1047,79 +972,95 @@ ResourcePref resources[] = {
 };
 #endif // XRESOURCES_PATCH
 
-/* Keys match the Awesome setup (../awesome/rc.lua in the nixos repo):
- * Super is MODKEY. Differences: Super+V toggles floating (Awesome had it on
- * Super+Ctrl+Space, which cycles layouts here), Super+B toggles the bar,
- * Super+G toggles gaps, and Super+S summons a scratchpad terminal. */
+/* My functions (mine.c). */
+static void restoreminimized(const Arg *arg);
+static void scratchpad_toggleclient(const Arg *arg);
+
+/* Keys match the Awesome setup (../awesome/rc.lua in the nixos repo), with
+ * Super as MODKEY. Only difference: Super+V toggles floating (Super+Ctrl+Space
+ * cycles layouts, like the global binding in Awesome). The comment at the end
+ * of each line is what the keybinding sheet (Super+F1, dwm-keys) shows, and
+ * the section comments are its headings. */
 static const Key keys[] = {
 	/* modifier                     key                      function        argument */
-	/* apps and menus */
-	{ MODKEY,                       XK_Return,               spawn,          SHCMD("alacritty") },
-	{ MODKEY,                       XK_space,                spawn,          SHCMD("rofi -show drun -show-icons") },
-	{ MODKEY,                       XK_r,                    spawn,          SHCMD("rofi -show run") },
-	{ MODKEY,                       XK_e,                    spawn,          SHCMD("thunar") },
-	{ MODKEY,                       XK_m,                    spawn,          SHCMD("power-menu") },
-	{ MODKEY,                       XK_n,                    spawn,          SHCMD("notification-history") },
-	{ MODKEY,                       XK_w,                    spawn,          SHCMD("awesome-wallpaper-picker") },
-	{ MODKEY,                       XK_c,                    spawn,          SHCMD("clipmenu") },
-	{ MODKEY,                       XK_l,                    spawn,          SHCMD("lock-screen") },
-	{ MODKEY|ShiftMask,             XK_x,                    spawn,          SHCMD("lock-screen") },
-	{ MODKEY,                       XK_d,                    spawn,          SHCMD("toggle-hdmi") },
-	{ 0,                            XK_Print,                spawn,          SHCMD("flameshot gui") },
-	{ MODKEY,                       XK_s,                    togglescratch,  {.ui = 0 } },
+	/* Apps and menus */
+	{ MODKEY,                       XK_Return,               spawn,          SHCMD("alacritty") },                    // terminal
+	{ MODKEY,                       XK_space,                spawn,          SHCMD("rofi -show drun -show-icons") },  // app launcher
+	{ MODKEY,                       XK_r,                    spawn,          SHCMD("rofi -show run") },               // run a command
+	{ MODKEY,                       XK_e,                    spawn,          SHCMD("thunar") },                       // file manager
+	{ MODKEY,                       XK_m,                    spawn,          SHCMD("power-menu") },                   // power menu
+	{ MODKEY,                       XK_n,                    spawn,          SHCMD("notification-history") },         // notification history
+	{ MODKEY,                       XK_w,                    spawn,          SHCMD("awesome-wallpaper-picker") },     // pick a wallpaper
+	{ MODKEY|ShiftMask,             XK_w,                    spawn,          SHCMD("dwm-menu") },                     // main menu
+	{ MODKEY,                       XK_F1,                   spawn,          SHCMD("dwm-keys") },                     // this keybinding sheet
+	{ MODKEY,                       XK_c,                    spawn,          SHCMD("clipmenu") },                     // clipboard history
+	{ MODKEY,                       XK_l,                    spawn,          SHCMD("lock-screen") },                  // lock the screen
+	{ MODKEY|ShiftMask,             XK_x,                    spawn,          SHCMD("lock-screen") },                  // lock the screen
+	{ MODKEY,                       XK_d,                    spawn,          SHCMD("toggle-hdmi") },                  // HDMI mirror on/off
+	{ 0,                            XK_Print,                spawn,          SHCMD("flameshot gui") },                // screenshot
 
-	/* media keys (awesome-osd shows the level) */
-	{ 0,                            XF86XK_AudioRaiseVolume, spawn,          SHCMD("awesome-osd volume-up") },
-	{ 0,                            XF86XK_AudioLowerVolume, spawn,          SHCMD("awesome-osd volume-down") },
-	{ 0,                            XF86XK_AudioMute,        spawn,          SHCMD("awesome-osd volume-mute") },
-	{ 0,                            XF86XK_AudioMicMute,     spawn,          SHCMD("awesome-osd mic-mute") },
-	{ 0,                            XF86XK_MonBrightnessUp,  spawn,          SHCMD("awesome-osd brightness-up") },
-	{ 0,                            XF86XK_MonBrightnessDown,spawn,          SHCMD("awesome-osd brightness-down") },
-	{ 0,                            XF86XK_AudioPlay,        spawn,          SHCMD("playerctl play-pause") },
-	{ 0,                            XF86XK_AudioPause,       spawn,          SHCMD("playerctl play-pause") },
-	{ 0,                            XF86XK_AudioNext,        spawn,          SHCMD("playerctl next") },
-	{ 0,                            XF86XK_AudioPrev,        spawn,          SHCMD("playerctl previous") },
+	/* Media keys */
+	{ 0,                            XF86XK_AudioRaiseVolume, spawn,          SHCMD("awesome-osd volume-up") },        // volume up
+	{ 0,                            XF86XK_AudioLowerVolume, spawn,          SHCMD("awesome-osd volume-down") },      // volume down
+	{ 0,                            XF86XK_AudioMute,        spawn,          SHCMD("awesome-osd volume-mute") },      // mute
+	{ 0,                            XF86XK_AudioMicMute,     spawn,          SHCMD("awesome-osd mic-mute") },         // mute the mic
+	{ 0,                            XF86XK_MonBrightnessUp,  spawn,          SHCMD("awesome-osd brightness-up") },    // brightness up
+	{ 0,                            XF86XK_MonBrightnessDown,spawn,          SHCMD("awesome-osd brightness-down") },  // brightness down
+	{ 0,                            XF86XK_AudioPlay,        spawn,          SHCMD("playerctl play-pause") },         // play/pause
+	{ 0,                            XF86XK_AudioPause,       spawn,          SHCMD("playerctl play-pause") },         // play/pause
+	{ 0,                            XF86XK_AudioNext,        spawn,          SHCMD("playerctl next") },               // next track
+	{ 0,                            XF86XK_AudioPrev,        spawn,          SHCMD("playerctl previous") },           // previous track
 
-	/* focus and moving windows */
-	{ MODKEY,                       XK_Left,                 focusdir,       {.i = 0 } }, // left
-	{ MODKEY,                       XK_Right,                focusdir,       {.i = 1 } }, // right
-	{ MODKEY,                       XK_Up,                   focusdir,       {.i = 2 } }, // up
-	{ MODKEY,                       XK_Down,                 focusdir,       {.i = 3 } }, // down
-	{ MODKEY,                       XK_j,                    focusstack,     {.i = +1 } },
-	{ MODKEY,                       XK_k,                    focusstack,     {.i = -1 } },
-	{ MODKEY|ShiftMask,             XK_j,                    movestack,      {.i = +1 } },
-	{ MODKEY|ShiftMask,             XK_k,                    movestack,      {.i = -1 } },
-	{ MODKEY|ControlMask,           XK_Return,               zoom,           {0} },        // move to master
-	{ MODKEY,                       XK_q,                    killclient,     {0} },
-	{ MODKEY|ShiftMask,             XK_c,                    killclient,     {0} },
-	{ MODKEY,                       XK_f,                    togglefullscreen, {0} },
-	{ MODKEY,                       XK_v,                    togglefloating, {0} },
+	/* Windows */
+	{ MODKEY,                       XK_Left,                 focusdir,       {.i = 0 } },                             // focus the window to the left
+	{ MODKEY,                       XK_Right,                focusdir,       {.i = 1 } },                             // focus the window to the right
+	{ MODKEY,                       XK_Up,                   focusdir,       {.i = 2 } },                             // focus the window above
+	{ MODKEY,                       XK_Down,                 focusdir,       {.i = 3 } },                             // focus the window below
+	{ MODKEY,                       XK_j,                    focusstack,     {.i = +1 } },                            // focus the next window
+	{ MODKEY,                       XK_k,                    focusstack,     {.i = -1 } },                            // focus the previous window
+	{ MODKEY|ShiftMask,             XK_j,                    movestack,      {.i = +1 } },                            // move the window down the stack
+	{ MODKEY|ShiftMask,             XK_k,                    movestack,      {.i = -1 } },                            // move the window up the stack
+	{ MODKEY|ControlMask,           XK_Return,               zoom,           {0} },                                   // swap with the master window
+	{ MODKEY,                       XK_q,                    killclient,     {0} },                                   // close the window
+	{ MODKEY|ShiftMask,             XK_c,                    killclient,     {0} },                                   // close the window
+	{ MODKEY,                       XK_f,                    togglefullscreen, {0} },                                 // fullscreen
+	{ MODKEY,                       XK_v,                    togglefloating, {0} },                                   // floating on/off
+	{ MODKEY,                       XK_t,                    togglealwaysontop, {0} },                                // always on top on/off
+	{ MODKEY|ShiftMask,             XK_n,                    showhideclient, {0} },                                   // minimize
+	{ MODKEY|ControlMask,           XK_n,                    restoreminimized, {0} },                                 // restore the last minimized window
+	{ MODKEY|ShiftMask,             XK_m,                    togglemax,      {0} },                                   // maximize on/off
+	{ MODKEY|ControlMask,           XK_m,                    toggleverticalmax, {0} },                                // maximize vertically on/off
+	{ MODKEY|ControlMask|ShiftMask, XK_m,                    togglehorizontalmax, {0} },                              // maximize horizontally on/off
+	{ MODKEY,                       XK_s,                    scratchpad_show, {0} },                                  // show/hide the scratchpad windows
+	{ MODKEY|ShiftMask,             XK_s,                    scratchpad_toggleclient, {0} },                          // make the window a scratchpad, or a normal window again
 
-	/* tags (workspaces) and monitors */
-	{ MODKEY|ShiftMask,             XK_Right,                shiftview,      {.i = +1 } }, // next tag
-	{ MODKEY|ShiftMask,             XK_Left,                 shiftview,      {.i = -1 } }, // previous tag
-	{ MODKEY,                       XK_Tab,                  view,           {0} },        // previous tag(s)
-	{ MODKEY,                       XK_Escape,               view,           {0} },
-	{ MODKEY|Mod1Mask,              XK_Right,                focusmon,       {.i = +1 } },
-	{ MODKEY|Mod1Mask,              XK_Left,                 focusmon,       {.i = -1 } },
-	{ MODKEY|ControlMask,           XK_j,                    focusmon,       {.i = +1 } },
-	{ MODKEY|ControlMask,           XK_k,                    focusmon,       {.i = -1 } },
-	{ MODKEY,                       XK_o,                    tagmon,         {.i = +1 } }, // window to next monitor
+	/* Tags and monitors */
+	{ MODKEY|ShiftMask,             XK_Right,                shiftview,      {.i = +1 } },                            // next tag
+	{ MODKEY|ShiftMask,             XK_Left,                 shiftview,      {.i = -1 } },                            // previous tag
+	{ MODKEY,                       XK_Tab,                  view,           {0} },                                   // back to the previous tag
+	{ MODKEY,                       XK_Escape,               view,           {0} },                                   // back to the previous tag
+	{ MODKEY|Mod1Mask,              XK_Right,                focusmon,       {.i = +1 } },                            // focus the next monitor
+	{ MODKEY|Mod1Mask,              XK_Left,                 focusmon,       {.i = -1 } },                            // focus the previous monitor
+	{ MODKEY|ControlMask,           XK_j,                    focusmon,       {.i = +1 } },                            // focus the next monitor
+	{ MODKEY|ControlMask,           XK_k,                    focusmon,       {.i = -1 } },                            // focus the previous monitor
+	{ MODKEY,                       XK_o,                    tagmon,         {.i = +1 } },                            // move the window to the next monitor
 
-	/* layout */
-	{ MODKEY|ControlMask,           XK_space,                cyclelayout,    {.i = +1 } },
-	{ MODKEY|ShiftMask,             XK_space,                cyclelayout,    {.i = -1 } },
-	{ MODKEY|Mod1Mask,              XK_l,                    setmfact,       {.f = +0.05} },
-	{ MODKEY|Mod1Mask,              XK_h,                    setmfact,       {.f = -0.05} },
-	{ MODKEY|ShiftMask,             XK_h,                    incnmaster,     {.i = +1 } },
-	{ MODKEY|ShiftMask,             XK_l,                    incnmaster,     {.i = -1 } },
-	{ MODKEY,                       XK_b,                    togglebar,      {0} },
-	{ MODKEY,                       XK_g,                    togglegaps,     {0} },
+	/* Layout */
+	{ MODKEY|ControlMask,           XK_space,                cyclelayout,    {.i = +1 } },                            // next layout
+	{ MODKEY|ShiftMask,             XK_space,                cyclelayout,    {.i = -1 } },                            // previous layout
+	{ MODKEY|Mod1Mask,              XK_l,                    setmfact,       {.f = +0.05} },                          // wider master area
+	{ MODKEY|Mod1Mask,              XK_h,                    setmfact,       {.f = -0.05} },                          // narrower master area
+	{ MODKEY|ShiftMask,             XK_h,                    incnmaster,     {.i = +1 } },                            // more master windows
+	{ MODKEY|ShiftMask,             XK_l,                    incnmaster,     {.i = -1 } },                            // fewer master windows
+	{ MODKEY,                       XK_b,                    togglebar,      {0} },                                   // make room for the bar on/off
+	{ MODKEY,                       XK_g,                    togglegaps,     {0} },                                   // gaps on/off
 
-	/* dwm itself */
-	{ MODKEY|ControlMask,           XK_r,                    quit,           {1} },        // restart in place (restartsig)
-	{ MODKEY|ShiftMask,             XK_q,                    quit,           {0} },        // log out
+	/* dwm */
+	{ MODKEY|ControlMask,           XK_r,                    quit,           {1} },                                   // restart dwm (windows stay)
+	{ MODKEY|ShiftMask,             XK_q,                    quit,           {0} },                                   // log out
 
+	/* Tags (Super+1-9 views a tag, Super+Ctrl adds it to the view, Super+Shift
+	 * moves the window there, Super+Ctrl+Shift adds the window to it) */
 	TAGKEYS(                        XK_1,                                    0)
 	TAGKEYS(                        XK_2,                                    1)
 	TAGKEYS(                        XK_3,                                    2)
@@ -1168,12 +1109,12 @@ static const Button buttons[] = {
 	{ ClkLtSymbol,          0,              Button1,        cyclelayout,    {.i = +1 } },
 	{ ClkLtSymbol,          0,              Button3,        cyclelayout,    {.i = -1 } },
 	{ ClkWinTitle,          0,              Button2,        zoom,           {0} },
-	{ ClkStatusText,        0,              Button2,        spawn,          SHCMD("alacritty") },
 	{ ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} },  // Super+drag moves
 	{ ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
 	{ ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },  // Super+right-drag resizes
 	{ ClkClientWin,         MODKEY,         Button4,        shiftview,      {.i = -1 } }, // Super+scroll: tags
 	{ ClkClientWin,         MODKEY,         Button5,        shiftview,      {.i = +1 } },
+	{ ClkRootWin,           0,              Button3,        spawn,          SHCMD("dwm-menu") },  // right-click the desktop: main menu
 	{ ClkRootWin,           MODKEY,         Button4,        shiftview,      {.i = -1 } },
 	{ ClkRootWin,           MODKEY,         Button5,        shiftview,      {.i = +1 } },
 	{ ClkTagBar,            0,              Button1,        view,           {0} },

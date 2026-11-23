@@ -882,6 +882,7 @@ static Window root, wmcheckwin;
 #include "config.h"
 
 #include "patch/include.c"
+#include "mine.c"
 
 /* compile-time check if all tags fit into an unsigned int bit array. */
 #if SCRATCHPAD_ALT_1_PATCH
@@ -2847,7 +2848,7 @@ maprequest(XEvent *e)
 	if (!XGetWindowAttributes(dpy, ev->window, &wa) || wa.override_redirect)
 		return;
 	#if BAR_ANYBAR_PATCH
-	if (wmclasscontains(ev->window, altbarclass, ""))
+	if (isaltbar(ev->window))
 		managealtbar(ev->window, &wa);
 	else
 	#endif // BAR_ANYBAR_PATCH
@@ -3515,7 +3516,7 @@ scan(void)
 			|| wa.override_redirect || XGetTransientForHint(dpy, wins[i], &d1))
 				continue;
 			#if BAR_ANYBAR_PATCH
-			if (wmclasscontains(wins[i], altbarclass, ""))
+			if (isaltbar(wins[i]))
 				managealtbar(wins[i], &wa);
 			else
 			#endif // BAR_ANYBAR_PATCH
