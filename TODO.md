@@ -12,6 +12,14 @@ Work through these one at a time on dwm days.
       the desktop) as rofi scripts in the nixos repo
 - [x] A first patch of my own (mine.c: docks as bars, restore minimized,
       scratchpad toggle)
+- [x] Float the same apps Awesome floats (window role rules on for the
+      Thunderbird/Chromium ones)
+- [x] Awesome-style scratchpads: Super+S shows all of them together,
+      centered at 60% of the focused monitor (mine.c)
+- [x] Drag a tiled window into a new spot (placemouse on Super+drag)
+- [x] Per-monitor layouts: dwindle 50/50 on the side-by-side monitors,
+      my own "rows" layout on the rotated one (mine.c)
+- [x] Cursor theme (Bibata) for dwm's own cursors (drw.c via Xcursor)
 
 ## Next
 - [ ] Try the bar on all three monitors: tag clicks on the rotated
@@ -19,8 +27,6 @@ Work through these one at a time on dwm days.
 - [ ] Check every keybinding against the Awesome rc.lua in daily use
 - [ ] Check window rules (Steam, Vesktop, YouTube Music) land on the right
       monitor and tag
-- [ ] Float the same apps Awesome floats (Tor Browser, CopyQ, Kruler, ...)
-- [ ] Show scratchpads centered at 60% of the screen, like Awesome
 - [ ] Check wallpaper and color changes (awesome-colors) restart dwm cleanly
 
 ## Upstream ideas (first contributions)

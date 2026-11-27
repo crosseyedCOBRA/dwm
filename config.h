@@ -539,16 +539,38 @@ static const Rule rules[] = {
 	/* Terminal swallowing: a GUI program started from alacritty takes the
 	 * terminal's place until it exits. xev and friends opt out. */
 	RULE(.class = "Alacritty", .isterminal = 1)
-	RULE(.title = "Event Tester", .noswallow = 1)
+	RULE(.title = "Event Tester", .noswallow = 1, .isfloating = 1)
 	RULE(.class = "pavucontrol", .isfloating = 1)
+	/* The same floating windows as the Awesome setup. */
+	RULE(.instance = "DTA", .isfloating = 1)          // Firefox addon DownThemAll
+	RULE(.instance = "copyq", .isfloating = 1)
+	RULE(.instance = "pinentry", .isfloating = 1)
+	RULE(.class = "Arandr", .isfloating = 1)
+	RULE(.class = "Blueman-manager", .isfloating = 1)
+	RULE(.class = "Gpick", .isfloating = 1)
+	RULE(.class = "Kruler", .isfloating = 1)
+	RULE(.class = "MessageWin", .isfloating = 1)      // kalarm
+	RULE(.class = "Sxiv", .isfloating = 1)
+	RULE(.class = "Tor Browser", .isfloating = 1)     // fixed size against fingerprinting
+	RULE(.class = "Wpa_gui", .isfloating = 1)
+	RULE(.class = "veromix", .isfloating = 1)
+	RULE(.class = "xtightvncviewer", .isfloating = 1)
+	RULE(.role = "AlarmWindow", .isfloating = 1)      // Thunderbird/Betterbird calendar
+	RULE(.role = "ConfigManager", .isfloating = 1)    // Thunderbird/Betterbird about:config
+	RULE(.role = "pop-up", .isfloating = 1)           // e.g. Chromium's detached DevTools
+	/* WebAppHub web apps (Chromium --app windows, class "chrome-<site>__-<profile>")
+	 * also have the "pop-up" role: tile them anyway, like Awesome. The later
+	 * matching rule wins. */
+	RULE(.class = "chrome-", .isfloating = 0)
 };
 
 #if MONITOR_RULES_PATCH
 #if PERTAG_PATCH
 static const MonitorRule monrules[] = {
-	/* monitor  tag   layout  mfact  nmaster  showbar  topbar */
-	{  1,       -1,   2,      -1,    -1,      -1,      -1     }, // use a different layout for the second monitor
-	{  -1,      -1,   0,      -1,    -1,      -1,      -1     }, // default
+	/* monitor  tag   layout  mfact  nmaster  showbar  topbar
+	 * layout is the position in layouts[] below: 6 = dwindle, 7 = rows */
+	{  1,       -1,   7,      -1,    -1,      -1,      -1     }, // rotated DisplayPort-1: rows
+	{  -1,      -1,   6,      0.5,   -1,      -1,      -1     }, // the others: dwindle, 2 windows split down the middle (dwindle's first split uses mfact)
 };
 #else
 static const MonitorRule monrules[] = {
@@ -686,6 +708,7 @@ static const Layout layouts[] = {
 	#endif
 };
 #else
+static void rows(Monitor *m); /* mine.c */
 static const Layout layouts[] = {
 	/* symbol     arrange function */
 	#if TILE_LAYOUT
@@ -731,6 +754,7 @@ static const Layout layouts[] = {
 	#if NROWGRID_LAYOUT
 	{ "###",      nrowgrid },
 	#endif
+	{ "rows",      rows },    /* mine.c: two rows for the portrait monitor */
 };
 #endif // FLEXTILE_DELUXE_LAYOUT
 
@@ -974,6 +998,7 @@ ResourcePref resources[] = {
 
 /* My functions (mine.c). */
 static void restoreminimized(const Arg *arg);
+static void scratchpad_toggleall(const Arg *arg);
 static void scratchpad_toggleclient(const Arg *arg);
 
 /* Keys match the Awesome setup (../awesome/rc.lua in the nixos repo), with
@@ -1029,9 +1054,7 @@ static const Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_n,                    showhideclient, {0} },                                   // minimize
 	{ MODKEY|ControlMask,           XK_n,                    restoreminimized, {0} },                                 // restore the last minimized window
 	{ MODKEY|ShiftMask,             XK_m,                    togglemax,      {0} },                                   // maximize on/off
-	{ MODKEY|ControlMask,           XK_m,                    toggleverticalmax, {0} },                                // maximize vertically on/off
-	{ MODKEY|ControlMask|ShiftMask, XK_m,                    togglehorizontalmax, {0} },                              // maximize horizontally on/off
-	{ MODKEY,                       XK_s,                    scratchpad_show, {0} },                                  // show/hide the scratchpad windows
+	{ MODKEY,                       XK_s,                    scratchpad_toggleall, {0} },                             // show/hide the scratchpad windows
 	{ MODKEY|ShiftMask,             XK_s,                    scratchpad_toggleclient, {0} },                          // make the window a scratchpad, or a normal window again
 
 	/* Tags and monitors */
@@ -1109,7 +1132,7 @@ static const Button buttons[] = {
 	{ ClkLtSymbol,          0,              Button1,        cyclelayout,    {.i = +1 } },
 	{ ClkLtSymbol,          0,              Button3,        cyclelayout,    {.i = -1 } },
 	{ ClkWinTitle,          0,              Button2,        zoom,           {0} },
-	{ ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} },  // Super+drag moves
+	{ ClkClientWin,         MODKEY,         Button1,        moveorplace,    {.i = 1} },  // Super+drag: a tiled window drops into a new tiling spot, a floating one just moves
 	{ ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
 	{ ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },  // Super+right-drag resizes
 	{ ClkClientWin,         MODKEY,         Button4,        shiftview,      {.i = -1 } }, // Super+scroll: tags
