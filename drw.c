@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <X11/Xlib.h>
+#include <X11/Xcursor/Xcursor.h>
 #include <X11/Xft/Xft.h>
 
 #include "patches.h"
@@ -759,7 +760,11 @@ drw_cur_create(Drw *drw, int shape)
 	if (!drw || !(cur = ecalloc(1, sizeof(Cur))))
 		return NULL;
 
-	cur->cursor = XCreateFontCursor(drw->dpy, shape);
+	/* Through Xcursor, so dwm's own cursors (the desktop, moving and
+	 * resizing) use the cursor theme (XCURSOR_THEME / Xcursor.theme). On
+	 * NixOS libX11 can't load libXcursor by itself, so XCreateFontCursor
+	 * always gave the plain X cursor. Falls back to it without a theme. */
+	cur->cursor = XcursorShapeLoadCursor(drw->dpy, shape);
 
 	return cur;
 }

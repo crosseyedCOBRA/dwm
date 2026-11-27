@@ -40,6 +40,9 @@ FREETYPEINC = /usr/include/freetype2
 
 # Uncomment for the ipc patch / IPC_PATCH
 YAJLLIBS = -lyajl
+
+# Cursor theme for dwm's own cursors (drw.c)
+XCURSORLIBS = -lXcursor
 #YAJLINC = -I/usr/include/yajl
 
 # Uncomment this for the rounded corners patch / ROUNDED_CORNERS_PATCH
@@ -60,7 +63,7 @@ XCBLIBS = -lX11-xcb -lxcb -lxcb-res
 
 # includes and libs
 INCS = -I${X11INC} -I${FREETYPEINC} ${YAJLINC} ${PANGOINC} ${BDINC}
-LIBS = -L${X11LIB} -lX11 ${XINERAMALIBS} ${FREETYPELIBS}  ${XRENDER} ${MPDCLIENT} ${XEXTLIB} ${XCBLIBS} ${KVMLIB} ${PANGOLIB} ${YAJLLIBS} ${IMLIB2LIBS} $(BDLIBS) $(XILIB)
+LIBS = -L${X11LIB} -lX11 ${XINERAMALIBS} ${FREETYPELIBS}  ${XRENDER} ${MPDCLIENT} ${XEXTLIB} ${XCBLIBS} ${KVMLIB} ${PANGOLIB} ${YAJLLIBS} ${XCURSORLIBS} ${IMLIB2LIBS} $(BDLIBS) $(XILIB)
 
 # flags
 CPPFLAGS = -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_XOPEN_SOURCE=700L -DVERSION=\"${VERSION}\" ${XINERAMAFLAGS}
